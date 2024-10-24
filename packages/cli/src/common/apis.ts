@@ -190,6 +190,18 @@ export const getConfirmations = async function (
     return rpc_getconfirmations(config, txid);
   }
 
+  const url = `${config.getMempoolApiHost()}/api/tx/${txid}`;
+
+  const res = await fetch(url, config.withProxy());
+  const json: any = await res.json();
+  console.log('waiting', json?.status);
+  if (json?.status?.confirmed) {
+    return {
+      blockhash: '',
+      confirmations: 1,
+    };
+  }
+
   logwarn('No supported getconfirmations', new Error());
   return {
     blockhash: '',
